@@ -43,30 +43,48 @@ func Calc(expression string) (float64, error) {
 
 	for i := 0; i < len(a); i++ {
 		switch a[i] {
-		case "+":
-			b, _ := strconv.ParseFloat(a[i-1], 64)
-			c, _ := strconv.ParseFloat(a[i+1], 64)
-			a[i+1] = fmt.Sprintf("%f", b+c)
-		case "-":
-			b, _ := strconv.ParseFloat(a[i-1], 64)
-			c, _ := strconv.ParseFloat(a[i+1], 64)
-			a[i+1] = fmt.Sprintf("%f", b-c)
 		case "/":
 			b, _ := strconv.ParseFloat(a[i-1], 64)
 			c, _ := strconv.ParseFloat(a[i+1], 64)
-			a[i+1] = fmt.Sprintf("%f", b/c)
+			copy(a[:i-1], a[i+1:])
+
+			a[i-1] = fmt.Sprintf("%f", b/c)
+			a = a[:len(a)-2]
 		case "*":
 			b, _ := strconv.ParseFloat(a[i-1], 64)
 			c, _ := strconv.ParseFloat(a[i+1], 64)
-			a[i+1] = fmt.Sprintf("%f", b*c)
+			copy(a[:i-1], a[i+1:])
+
+			a[i-1] = fmt.Sprintf("%f", b*c)
+			a = a[:len(a)-2]
+		}
+	}
+
+	for i := 0; i < len(a); i++ {
+		switch a[i] {
+		case "+":
+			b, _ := strconv.ParseFloat(a[i-1], 64)
+			c, _ := strconv.ParseFloat(a[i+1], 64)
+			copy(a[:i-1], a[i+1:])
+
+			a[i-1] = fmt.Sprintf("%f", b+c)
+			a = a[:len(a)-2]
+		case "-":
+			b, _ := strconv.ParseFloat(a[i-1], 64)
+			c, _ := strconv.ParseFloat(a[i+1], 64)
+			copy(a[:i-1], a[i+1:])
+
+			a[i-1] = fmt.Sprintf("%f", b-c)
+			a = a[:len(a)-2]
 		}
 	}
 
 	return strconv.ParseFloat(a[len(a)-1], 64)
+
 }
 
 func main() {
 	fmt.Println(Calc("34 + 5"))
-	fmt.Println(Calc("2*2+2"))
+	fmt.Println(Calc("2+2*2"))
 	fmt.Println(Calc("(2+2)*2"))
 }
